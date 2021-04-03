@@ -59,7 +59,7 @@ func (fsh *FsHide) Hide(hidden bool) (err error) {
 
 	err = os.Rename(fsh.Path, dstName)
 	if err != nil {
-		return fmt.Errorf("Something went wrong renaming the \"%s\" to \"%s\": %s", fsh.Path, dstName, err)
+		return fmt.Errorf("Something went wrong renaming the \"%s\" to \"%s\": \"%s\"", fsh.Path, dstName, err)
 	}
 
 	return nil

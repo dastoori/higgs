@@ -3,7 +3,6 @@
 package fshide
 
 import (
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
