@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-// IsHidden checks whether "fh.Path" is hidden or not
+// IsHidden checks whether "FsHide.Path" is hidden or not
 func (fh *FsHide) IsHidden() (bool, error) {
 	f, err := os.Stat(fh.Path)
 	if err != nil {
@@ -26,7 +26,7 @@ func (fh *FsHide) IsHidden() (bool, error) {
 	return false, nil
 }
 
-// Hide makes file or directory hidden or not hidden
+// Hide makes file or directory hidden or unhidden
 func (fsh *FsHide) Hide(hidden bool) (err error) {
 	srcFile, err := os.Stat(fsh.Path)
 	if err != nil {

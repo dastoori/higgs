@@ -20,7 +20,7 @@ func IsHidden(path string) (bool, error) {
 	return NewFsHide(path, false).IsHidden()
 }
 
-// Hide makes file or directory hidden or not hidden
+// Hide makes file or directory hidden or unhidden
 func Hide(path string, hidden bool) error {
 	return NewFsHide(path, false).Hide(hidden)
 }
