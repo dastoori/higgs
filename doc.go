@@ -1,5 +1,5 @@
 /*
-A tiny GO library to hide/show files and directories
+A tiny Go library to hide/show files and directories
 
 	package main
 

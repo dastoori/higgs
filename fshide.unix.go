@@ -27,11 +27,11 @@ func (fh *FsHide) IsHidden() (bool, error) {
 }
 
 // Hide makes file or directory hidden or unhidden
-func (fsh *FsHide) Hide(hidden bool) (err error) {
-	srcFile, err := os.Stat(fsh.Path)
+func (fh *FsHide) Hide(hidden bool) (err error) {
+	srcFile, err := os.Stat(fh.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("\"%s\" is not exists", fsh.Path)
+			return fmt.Errorf("\"%s\" is not exists", fh.Path)
 		}
 		return fmt.Errorf("Something went wrong getting file stat: \"%s\"", err)
 	}
@@ -44,22 +44,22 @@ func (fsh *FsHide) Hide(hidden bool) (err error) {
 	// Generate destination name
 	var dstName string
 	if hidden {
-		dstName = filepath.Join(filepath.Dir(fsh.Path), "."+filepath.Base(fsh.Path))
+		dstName = filepath.Join(filepath.Dir(fh.Path), "."+filepath.Base(fh.Path))
 	} else {
-		dstName = filepath.Join(filepath.Dir(fsh.Path), strings.TrimPrefix(filepath.Base(fsh.Path), "."))
+		dstName = filepath.Join(filepath.Dir(fh.Path), strings.TrimPrefix(filepath.Base(fh.Path), "."))
 	}
 
 	// Check destination file
-	if !fsh.Overwrite {
+	if !fh.Overwrite {
 		_, err = os.Stat(dstName)
 		if err == nil {
 			return fmt.Errorf("\"%s\" already exists\nSet the `Overwrite` flag to skip this check", dstName)
 		}
 	}
 
-	err = os.Rename(fsh.Path, dstName)
+	err = os.Rename(fh.Path, dstName)
 	if err != nil {
-		return fmt.Errorf("Something went wrong renaming the \"%s\" to \"%s\": \"%s\"", fsh.Path, dstName, err)
+		return fmt.Errorf("Something went wrong renaming the \"%s\" to \"%s\": \"%s\"", fh.Path, dstName, err)
 	}
 
 	return nil
