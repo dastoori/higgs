@@ -37,10 +37,6 @@ func main() {
 }
 ```
 
-## TODO
-
-- [ ] Windows support
-
 ## License
 
 MIT

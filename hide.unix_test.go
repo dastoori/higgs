@@ -69,7 +69,7 @@ func TestIsHiddenWhenNotExists(t *testing.T) {
 	}
 }
 
-func TestHideHidesWhenAlreadyHidden(t *testing.T) {
+func TestHiddenHidesWhenAlreadyHidden(t *testing.T) {
 	path := filepath.Join(tmpDir, ".b")
 	err := Hide(path)
 
@@ -107,7 +107,7 @@ func TestHideWhenNotExists(t *testing.T) {
 	}
 }
 
-func TestHideHidesFile(t *testing.T) {
+func TestHiddenHidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, "a")
 	err := Hide(path)
 
@@ -137,7 +137,7 @@ func TestUnhideUnhidesFile(t *testing.T) {
 	}
 }
 
-func TestHideHidesDirectory(t *testing.T) {
+func TestHiddenHidesDirectory(t *testing.T) {
 	path := filepath.Join(tmpDir, "c")
 	err := Hide(path)
 
@@ -152,7 +152,7 @@ func TestHideHidesDirectory(t *testing.T) {
 	}
 }
 
-func TestHideCantHidesNoOverwrite(t *testing.T) {
+func TestHiddenCantHidesNoOverwrite(t *testing.T) {
 	path := filepath.Join(tmpDir, "d")
 	err := NewFileHide(path, false).Hide()
 
@@ -167,7 +167,7 @@ func TestHideCantHidesNoOverwrite(t *testing.T) {
 	}
 }
 
-func TestHideHidesWithOverwrite(t *testing.T) {
+func TestHiddenHidesWithOverwrite(t *testing.T) {
 	path := filepath.Join(tmpDir, "d")
 	err := NewFileHide(path, true).Hide()
 

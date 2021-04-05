@@ -26,12 +26,12 @@ func (h *FileHide) IsHidden() (bool, error) {
 	return false, nil
 }
 
-// Hide makes file or directory hidden or unhidden
+// Hide makes file or directory hidden
 func (h *FileHide) Hide() (err error) {
 	return h.hide(true)
 }
 
-// Unhide makes file or directory hidden or unhidden
+// Unhide makes file or directory unhidden
 func (h *FileHide) Unhide() (err error) {
 	return h.hide(false)
 }
