@@ -1,0 +1,32 @@
+name: windows
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        go_version: [ 1.14, 1.15, 1.16 ]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go ${{ matrix.go_version }}
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go_version }}
+
+    - name: Test
+      run: go test -v ./...
+    
+    - name: Coverage
+      run: go test -race -coverprofile='coverage.txt' -covermode=atomic
+    - name: Upload coverage to Codecov
+      run: curl -s https://codecov.io/bash | bash
+      shell: bash
+      
