@@ -1,6 +1,6 @@
 // +build windows
 
-package fshide
+package higgs
 
 import (
 	"io/ioutil"
@@ -21,7 +21,7 @@ func touch(path, content string) {
 }
 
 func TestMain(t *testing.M) {
-	tmpDir, _ = ioutil.TempDir("", "fshide*")
+	tmpDir, _ = ioutil.TempDir("", "higgs*")
 	touch("a", "a")
 	touch("b", "b")
 	touch("c/c.a", "c.a")
@@ -39,5 +39,9 @@ func TestIsHidden(t *testing.T) {
 }
 
 func TestHide(t *testing.T) {
+	// TODO implement windows support
+}
+
+func TestUnhide(t *testing.T) {
 	// TODO implement windows support
 }

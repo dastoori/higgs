@@ -1,19 +1,19 @@
 /*
-A tiny Go library to hide/show files and directories
+A tiny cross-platform Go library to hide/unhide files and directories
 
 	package main
 
 	import (
 		"fmt"
-		"github.com/dastoori/go-fshide"
+		"github.com/dastoori/higgs"
 	)
 
 	func main() {
-		err := fshide.Hide("./path-to-hide", true)
+		err := higgs.Hide("./path-to-hide")
 
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 */
-package fshide
+package higgs

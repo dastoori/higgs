@@ -1,3 +1,3 @@
-module github.com/dastoori/go-fshide
+module github.com/dastoori/higgs
 
 go 1.16
