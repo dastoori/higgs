@@ -1,14 +1,17 @@
 package higgs
 
+// FileHidener implements the FileHide methods
 type FileHidener interface {
 	IsHidden() (bool, error)
 	Hide() error
 	Unhide() error
 }
 
+// FileHide object that holds higgs configs
 type FileHide struct {
-	Path      string
-	Overwrite bool
+	Path                    string
+	UnixOverwrite           bool
+	UnixUnhideAutoPrefixDot bool
 }
 
 // NewFileHide makes new Hide instance
