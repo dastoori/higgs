@@ -9,9 +9,8 @@ type FileHidener interface {
 
 // FileHide object that holds higgs configs
 type FileHide struct {
-	Path                    string
-	UnixOverwrite           bool
-	UnixUnhideAutoPrefixDot bool
+	Path      string
+	Overwrite bool
 }
 
 // NewFileHide makes new Hide instance
