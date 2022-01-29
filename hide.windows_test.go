@@ -242,7 +242,7 @@ func TestHideUnhidesDirectory(t *testing.T) {
 
 func TestNewFileHideHiddenHidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, "b")
-	err := NewFileHide(path, false).Hide()
+	err := NewFileHide(path, UnixOverwriteOption(true)).Hide()
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
