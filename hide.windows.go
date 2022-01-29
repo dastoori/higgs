@@ -18,8 +18,8 @@ func getFileAttrs(path string) (uint32, *uint16, error) {
 }
 
 // IsHidden checks whether "FileHide.Path" is hidden or not
-func (h *FileHide) IsHidden() (bool, error) {
-	attrs, _, err := getFileAttrs(h.Path)
+func (fh *FileHide) IsHidden() (bool, error) {
+	attrs, _, err := getFileAttrs(fh.Path)
 	if err != nil {
 		return false, fmt.Errorf("something went wrong getting the file attributes: \"%s\"", err)
 	}
@@ -31,25 +31,25 @@ func (h *FileHide) IsHidden() (bool, error) {
 }
 
 // Hide makes file or directory hidden
-func (h *FileHide) Hide() (err error) {
-	return h.hide(true)
+func (fh *FileHide) Hide() (err error) {
+	return fh.hide(true)
 }
 
 // Unhide makes file or directory unhidden
-func (h *FileHide) Unhide() (err error) {
-	return h.hide(false)
+func (fh *FileHide) Unhide() (err error) {
+	return fh.hide(false)
 }
 
-func (h *FileHide) hide(hidden bool) error {
-	_, err := os.Stat(h.Path)
+func (fh *FileHide) hide(hidden bool) error {
+	_, err := os.Stat(fh.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("\"%s\" is not exists", h.Path)
+			return fmt.Errorf("\"%s\" is not exists", fh.Path)
 		}
 		return fmt.Errorf("something went wrong getting file stat: \"%s\"", err)
 	}
 
-	attrs, utf16PtrPath, err := getFileAttrs(h.Path)
+	attrs, utf16PtrPath, err := getFileAttrs(fh.Path)
 	if err != nil {
 		return fmt.Errorf("something went wrong getting the file attributes: \"%s\"", err)
 	}

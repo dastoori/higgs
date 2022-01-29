@@ -1,3 +1,4 @@
+//go:build !windows
 // +build !windows
 
 package higgs
@@ -7,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -71,10 +73,14 @@ func TestIsHiddenWhenNotExists(t *testing.T) {
 
 func TestHiddenHidesWhenAlreadyHidden(t *testing.T) {
 	path := filepath.Join(tmpDir, ".b")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path != newPath {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 
 	_, err = os.Stat(path)
@@ -86,10 +92,14 @@ func TestHiddenHidesWhenAlreadyHidden(t *testing.T) {
 
 func TestUnhideUnhidesWhenAlreadyNotHidden(t *testing.T) {
 	path := filepath.Join(tmpDir, "a")
-	err := Unhide(path)
+	newPath, err := Unhide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path != newPath {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 
 	_, err = os.Stat(path)
@@ -100,19 +110,28 @@ func TestUnhideUnhidesWhenAlreadyNotHidden(t *testing.T) {
 }
 
 func TestHideWhenNotExists(t *testing.T) {
-	err := Hide(filepath.Join(tmpDir, "notexists"))
+	path := filepath.Join(tmpDir, "notexists")
+	newPath, err := Hide(path)
 
 	if err == nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == "" {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 }
 
 func TestHiddenHidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, "a")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == newPath || !strings.HasSuffix(newPath, ".a") {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 
 	_, err = os.Stat(path)
@@ -124,10 +143,14 @@ func TestHiddenHidesFile(t *testing.T) {
 
 func TestUnhideUnhidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, ".b")
-	err := Unhide(path)
+	newPath, err := Unhide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == newPath || !strings.HasSuffix(newPath, "b") {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 
 	_, err = os.Stat(path)
@@ -139,10 +162,14 @@ func TestUnhideUnhidesFile(t *testing.T) {
 
 func TestHiddenHidesDirectory(t *testing.T) {
 	path := filepath.Join(tmpDir, "c")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == newPath || !strings.HasSuffix(newPath, ".c") {
+		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 
 	_, err = os.Stat(path)
@@ -154,10 +181,15 @@ func TestHiddenHidesDirectory(t *testing.T) {
 
 func TestHiddenCantHidesNoOverwrite(t *testing.T) {
 	path := filepath.Join(tmpDir, "d")
-	err := NewFileHide(path, false).Hide()
+	fh := NewFileHide(path)
+	err := fh.Hide()
 
 	if err == nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path != fh.Path {
+		t.Errorf("the file wrongly renamed: \"%s\"", fh.Path)
 	}
 
 	_, err = os.Stat(path)
@@ -169,10 +201,15 @@ func TestHiddenCantHidesNoOverwrite(t *testing.T) {
 
 func TestHiddenHidesWithOverwrite(t *testing.T) {
 	path := filepath.Join(tmpDir, "d")
-	err := NewFileHide(path, true).Hide()
+	fh := NewFileHide(path, UnixOverwriteOption(true))
+	err := fh.Hide()
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == fh.Path || !strings.HasSuffix(fh.Path, ".d") {
+		t.Errorf("the file wrongly renamed: \"%s\"", fh.Path)
 	}
 
 	_, err = os.Stat(path)

@@ -1,6 +1,8 @@
 # higgs
 
-A tiny cross-platform Go library to hide or unhide files and directories
+A tiny cross-platform Go library to hide or unhide files and directories.
+
+**Supported OSs:** All unix based OSs (Tested on Ubuntu, MacOS), Windows
 
 [![unix](https://github.com/dastoori/higgs/actions/workflows/unix.yml/badge.svg)](https://github.com/dastoori/higgs/actions/workflows/unix.yml)
 [![windows](https://github.com/dastoori/higgs/actions/workflows/windows.yml/badge.svg)](https://github.com/dastoori/higgs/actions/workflows/windows.yml)
@@ -29,17 +31,37 @@ import (
 )
 
 func main() {
-	err := higgs.Hide("foo.txt")
+	path := "foo.txt"
+
+	// Hiding a file
+	newPath, err := higgs.Hide(path)
+	// NOTE: On Unix after hiding the file the file name
+	// will be changed to `.foo.txt` and `newPath` contains
+	// the new file name
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Unhiding a file
+	newPath, err = higgs.Unhide(newPath)
 	
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = higgs.Unhide("foo.txt")
+	// Setting unix overwrite option (disable by default)
+	fh := NewFileHide(".bar.txt", UnixOverwriteOption(true))
+
+	// NOTE: On Unix if a `bar.txt` file exists, it will be
+	// overwritten after unhiding `.bar.txt`
+	err := fh.Unhide()
 	
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// NOTE: `fh.Path` contains the new file name
 }
 ```
 
