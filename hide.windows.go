@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package higgs
@@ -31,12 +32,12 @@ func (fh *FileHide) IsHidden() (bool, error) {
 }
 
 // Hide makes file or directory hidden
-func (fh *FileHide) Hide() (err error) {
+func (fh *FileHide) Hide() error {
 	return fh.hide(true)
 }
 
 // Unhide makes file or directory unhidden
-func (fh *FileHide) Unhide() (err error) {
+func (fh *FileHide) Unhide() error {
 	return fh.hide(false)
 }
 

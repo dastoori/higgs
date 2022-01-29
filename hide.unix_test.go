@@ -117,7 +117,7 @@ func TestHideWhenNotExists(t *testing.T) {
 		t.Errorf("error: \"%s\"", err)
 	}
 
-	if path == "" {
+	if newPath != "" {
 		t.Errorf("the file wrongly renamed: \"%s\"", newPath)
 	}
 }

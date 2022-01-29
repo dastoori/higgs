@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package higgs
@@ -104,10 +105,13 @@ func TestIsHiddenWhenNotExists(t *testing.T) {
 
 func TestHideHidesWhenAlreadyHidden(t *testing.T) {
 	path := filepath.Join(tmpDir, "b")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
@@ -122,10 +126,13 @@ func TestHideHidesWhenAlreadyHidden(t *testing.T) {
 
 func TestUnhideNotHidesWhenAlreadyNotHidden(t *testing.T) {
 	path := filepath.Join(tmpDir, "a")
-	err := Unhide(path)
+	newPath, err := Unhide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
@@ -139,19 +146,25 @@ func TestUnhideNotHidesWhenAlreadyNotHidden(t *testing.T) {
 }
 
 func TestHideWhenNotExists(t *testing.T) {
-	err := Hide(filepath.Join(tmpDir, "notexists"))
+	newPath, err := Hide(filepath.Join(tmpDir, "notexists"))
 
 	if err == nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if newPath != "" {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 }
 
 func TestHideHidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, "a")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
@@ -166,10 +179,13 @@ func TestHideHidesFile(t *testing.T) {
 
 func TestUnhideUnhidesFile(t *testing.T) {
 	path := filepath.Join(tmpDir, "b")
-	err := Unhide(path)
+	newPath, err := Unhide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
@@ -184,10 +200,13 @@ func TestUnhideUnhidesFile(t *testing.T) {
 
 func TestHideHidesDirectory(t *testing.T) {
 	path := filepath.Join(tmpDir, "c")
-	err := Hide(path)
+	newPath, err := Hide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
@@ -202,10 +221,13 @@ func TestHideHidesDirectory(t *testing.T) {
 
 func TestHideUnhidesDirectory(t *testing.T) {
 	path := filepath.Join(tmpDir, "d")
-	err := Unhide(path)
+	newPath, err := Unhide(path)
 
 	if err != nil {
 		t.Errorf("error: \"%s\"", err)
+	}
+	if path != newPath {
+		t.Errorf("the new file path is wrong: \"%s\"", newPath)
 	}
 
 	hidden, err := isFileHidden(path)
