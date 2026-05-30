@@ -1,5 +1,4 @@
 //go:build !windows
-// +build !windows
 
 package higgs
 
@@ -12,10 +11,14 @@ import (
 
 // IsHidden checks whether "FileHide.Path" is hidden or not
 func (fh *FileHide) IsHidden() (bool, error) {
+	if fh.DarwinNative {
+		return darwinHasHidden(fh.Path)
+	}
+
 	f, err := os.Stat(fh.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return false, fmt.Errorf("\"%s\" is not exists", fh.Path)
+			return false, fmt.Errorf("\"%s\" does not exist", fh.Path)
 		}
 		return false, fmt.Errorf("something went wrong getting file stat: \"%s\"", err)
 	}
@@ -41,9 +44,14 @@ func (fh *FileHide) hide(hidden bool) (err error) {
 	srcFile, err := os.Stat(fh.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("\"%s\" is not exists", fh.Path)
+			return fmt.Errorf("\"%s\" does not exist", fh.Path)
 		}
 		return fmt.Errorf("something went wrong getting file stat: \"%s\"", err)
+	}
+
+	// macOS native hiding toggles the UF_HIDDEN flag without renaming the file
+	if fh.DarwinNative {
+		return darwinSetHidden(fh.Path, hidden)
 	}
 
 	if strings.HasPrefix(srcFile.Name(), ".") == hidden {
@@ -59,11 +67,17 @@ func (fh *FileHide) hide(hidden bool) (err error) {
 		dstName = filepath.Join(filepath.Dir(fh.Path), strings.TrimPrefix(filepath.Base(fh.Path), "."))
 	}
 
+	// Guard against producing an empty or dot-only destination name
+	if base := filepath.Base(dstName); base == "" || base == "." || base == ".." {
+		return fmt.Errorf("cannot rename \"%s\" to an invalid name \"%s\"", fh.Path, dstName)
+	}
+
 	// Check destination file
 	if !fh.UnixOverwrite {
-		_, err = os.Stat(dstName)
-		if err == nil {
+		if _, statErr := os.Stat(dstName); statErr == nil {
 			return fmt.Errorf("\"%s\" already exists\nSet the `UnixOverwrite` flag to skip this check", dstName)
+		} else if !os.IsNotExist(statErr) {
+			return fmt.Errorf("something went wrong checking destination \"%s\": \"%s\"", dstName, statErr)
 		}
 	}
 

@@ -1,13 +1,12 @@
 //go:build !windows
-// +build !windows
 
 package higgs
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -20,16 +19,18 @@ func touch(path, content string) {
 	if dir != "" {
 		os.MkdirAll(filepath.Join(tmpDir, dir), 0755)
 	}
-	ioutil.WriteFile(filepath.Join(tmpDir, path), []byte(content), 0644)
+	os.WriteFile(filepath.Join(tmpDir, path), []byte(content), 0644)
 }
 
 func TestMain(t *testing.M) {
-	tmpDir, _ = ioutil.TempDir("", "higgs*")
+	tmpDir, _ = os.MkdirTemp("", "higgs*")
 	touch("a", "a")
 	touch(".b", "b")
 	touch("c/c.a", "c.a")
 	touch("d", "d")
 	touch(".d", "d hidden")
+	touch("e", "e")
+	touch("native", "native")
 
 	code := t.Run()
 	defer func() {
@@ -216,5 +217,42 @@ func TestHiddenHidesWithOverwrite(t *testing.T) {
 
 	if err == nil {
 		t.Errorf("the file is still exists: \"%s\"", err)
+	}
+}
+
+func TestNewFileHideHidesFile(t *testing.T) {
+	path := filepath.Join(tmpDir, "e")
+	fh := NewFileHide(path)
+	err := fh.Hide()
+
+	if err != nil {
+		t.Errorf("error: \"%s\"", err)
+	}
+
+	if path == fh.Path || !strings.HasSuffix(fh.Path, ".e") {
+		t.Errorf("the file wrongly renamed: \"%s\"", fh.Path)
+	}
+
+	hidden, err := fh.IsHidden()
+
+	if err != nil {
+		t.Errorf("error: \"%s\"", err)
+	}
+
+	if !hidden {
+		t.Errorf("file should be hidden but it is not: \"%s\"", fh.Path)
+	}
+}
+
+func TestDarwinNativeOptionUnsupportedOffDarwin(t *testing.T) {
+	if runtime.GOOS == "darwin" {
+		t.Skip("DarwinNativeOption is supported on macOS")
+	}
+
+	path := filepath.Join(tmpDir, "a")
+	err := NewFileHide(path, DarwinNativeOption(true)).Hide()
+
+	if err == nil {
+		t.Errorf("expected an error when using DarwinNativeOption on a non-macOS unix system")
 	}
 }

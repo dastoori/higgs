@@ -1,5 +1,4 @@
 //go:build windows
-// +build windows
 
 package higgs
 
@@ -20,15 +19,21 @@ func getFileAttrs(path string) (uint32, *uint16, error) {
 
 // IsHidden checks whether "FileHide.Path" is hidden or not
 func (fh *FileHide) IsHidden() (bool, error) {
+	if _, err := os.Stat(fh.Path); err != nil {
+		if os.IsNotExist(err) {
+			return false, fmt.Errorf("\"%s\" does not exist", fh.Path)
+		}
+		return false, fmt.Errorf("something went wrong getting file stat: \"%s\"", err)
+	}
+
 	attrs, _, err := getFileAttrs(fh.Path)
 	if err != nil {
 		return false, fmt.Errorf("something went wrong getting the file attributes: \"%s\"", err)
 	}
 	if attrs&syscall.FILE_ATTRIBUTE_HIDDEN > 0 {
 		return true, nil
-	} else {
-		return false, nil
 	}
+	return false, nil
 }
 
 // Hide makes file or directory hidden
@@ -45,7 +50,7 @@ func (fh *FileHide) hide(hidden bool) error {
 	_, err := os.Stat(fh.Path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("\"%s\" is not exists", fh.Path)
+			return fmt.Errorf("\"%s\" does not exist", fh.Path)
 		}
 		return fmt.Errorf("something went wrong getting file stat: \"%s\"", err)
 	}
@@ -66,7 +71,13 @@ func (fh *FileHide) hide(hidden bool) error {
 		if attrs&syscall.FILE_ATTRIBUTE_HIDDEN == 0 {
 			return nil
 		}
-		newAttrs = attrs - (attrs & syscall.FILE_ATTRIBUTE_HIDDEN)
+		// Clear the hidden attribute
+		newAttrs = attrs &^ syscall.FILE_ATTRIBUTE_HIDDEN
+		// SetFileAttributes rejects a value of 0; FILE_ATTRIBUTE_NORMAL must be
+		// used (and only valid) when no other attributes remain.
+		if newAttrs == 0 {
+			newAttrs = syscall.FILE_ATTRIBUTE_NORMAL
+		}
 	}
 	err = syscall.SetFileAttributes(utf16PtrPath, newAttrs)
 	if err != nil {

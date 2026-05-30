@@ -1,11 +1,9 @@
 //go:build windows
-// +build windows
 
 package higgs
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -20,7 +18,7 @@ func touch(path, content string) {
 	if dir != "" {
 		os.MkdirAll(filepath.Join(tmpDir, dir), 0755)
 	}
-	ioutil.WriteFile(filepath.Join(tmpDir, path), []byte(content), 0644)
+	os.WriteFile(filepath.Join(tmpDir, path), []byte(content), 0644)
 }
 
 func hideFile(path string) error {
@@ -47,7 +45,7 @@ func isFileHidden(path string) (bool, error) {
 }
 
 func TestMain(t *testing.M) {
-	tmpDir, _ = ioutil.TempDir("", "higgs*")
+	tmpDir, _ = os.MkdirTemp("", "higgs*")
 	touch("a", "a")
 	touch("b", "b")
 	touch("c/c.a", "c.a")
